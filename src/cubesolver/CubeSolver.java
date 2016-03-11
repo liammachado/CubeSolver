@@ -1,6 +1,5 @@
 package cubesolver;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -157,19 +156,6 @@ public class CubeSolver {
 					MOVES[PHASE_MOVES[i]].move(newState);
 					numSingleTurns += NUM_SINGLE_TURNS[PHASE_MOVES[i]];
 					int nextInt = asInteger(newState);
-
-//					if (curState.solution.size() == sol.size() - 1) {
-//						boolean found = true;
-//						for (int j = 0; j < sol.size() - 3; ++j) {
-//							if (sol.get(j) != curState.solution.get(j)) {
-//								found = false;
-//								break;
-//							}
-//						}
-//						if (found) {
-//							System.out.println(Arrays.toString(curState.solution.toArray()));
-//						}
-//					}
 
 					if (!visited[nextInt]) {
 						toMarkAsVisited.add(nextInt);
@@ -548,28 +534,6 @@ public class CubeSolver {
 				}
 
 				int parity(int[] state) {
-					int parity = 0;
-					int[] numInPlace = new int[3];
-					for (int i = 28; i < 40; ++i)
-						if (state[i] == i - 28)	++numInPlace[SLICES[state[i]]];
-
-					if (numInPlace[2] == 2 || (numInPlace[2] == 0 && (Math.abs(EDGE_PERM_ORDER[state[32]] - EDGE_PERM_ORDER[state[33]]) != 1 
-							|| Math.abs(EDGE_PERM_ORDER[state[34]] - EDGE_PERM_ORDER[state[35]]) != 1
-							|| EDGE_PERM_ORDER[state[34]] - EDGE_PERM_ORDER[state[35]] != EDGE_PERM_ORDER[state[32]] - EDGE_PERM_ORDER[state[33]]))) {
-						++parity;
-					}
-					if (numInPlace[1] == 2 || (numInPlace[1] == 0 && (Math.abs(EDGE_PERM_ORDER[state[29]] - EDGE_PERM_ORDER[state[31]]) != 1 
-							|| Math.abs(EDGE_PERM_ORDER[state[39]] - EDGE_PERM_ORDER[state[37]]) != 1
-							|| EDGE_PERM_ORDER[state[39]] - EDGE_PERM_ORDER[state[37]] != EDGE_PERM_ORDER[state[29]] - EDGE_PERM_ORDER[state[31]]))) {
-						++parity;
-					}
-					if (numInPlace[0] == 2 || (numInPlace[0] == 0 && (Math.abs(EDGE_PERM_ORDER[state[28]] - EDGE_PERM_ORDER[state[30]]) != 1 
-							|| Math.abs(EDGE_PERM_ORDER[state[38]] - EDGE_PERM_ORDER[state[36]]) != 1
-							|| EDGE_PERM_ORDER[state[38]] - EDGE_PERM_ORDER[state[36]] != EDGE_PERM_ORDER[state[28]] - EDGE_PERM_ORDER[state[30]]))) {
-						++parity;
-					}
-
-					//					return parity % 2;
 					return numSingleTurns % 2;
 				}
 			}, 
@@ -600,12 +564,10 @@ public class CubeSolver {
 	};
 
 	private static final int[] NUM_SINGLE_TURNS = { 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0 };
-	private static final int[] UD_SLICE_ORDER = { 4, 5, 6, 7, 0, 1, 2, 3, 8, 9, 10, 11 };
 	private static final int[] SLICE_ORDER = { 0, 4, 1, 5, -1, -1, -1, -1, 3, 7, 2, 6 };
 	private static final int[] TETRAD_ORDER = { 0, 4, 1, 5, 6, 2, 7, 3 };
 	private static final int[] DUOS = { 0, 0, 1, 1, 2, 2, 3, 3 }; 
 	private static final int[] SLICES = { 0, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 1 }; //Table to lookup which of the three slices each edge belongs in.
-	private static final int[] TETRADS = { 0, 1, 0, 1, 1, 0, 1, 0 }; //Table to lookup which of the two tetrads each corner belongs in.
 	private static final int[][] SLICE_EDGES = { //Reverse of SLICES table.
 			{ 0, 2, 10, 8 },
 			{ 1, 3, 11, 9 },
@@ -615,7 +577,6 @@ public class CubeSolver {
 			{ 0, 2, 5, 7 },
 			{ 1, 3, 4, 6 }
 	};
-	private static final int[] EDGE_PERM_ORDER = { 0, 0, 1, 1, 0, 1, 2, 3, 3, 3, 2, 2 }; //Table to lookup the correct ordering of the edges within their slice.
 	private static final int[][] COMBINATIONS = { // rCc , where r is the row and c is the column.
 			{ 1 },
 			{ 1, 1 },
@@ -697,54 +658,16 @@ public class CubeSolver {
 		try {
 			return solve(scramble, 0);
 		} catch (Exception e) {
+			System.out.println("Parity error! Resolving...");
 			return solve(scramble, 1);
 		}
 	}
 
-	private static String randomScramble() {
-		StringBuilder scramble = new StringBuilder("");
-		int prevFace = 0, beforePrevFace = 0, currentFace; 
-		for(int i = 0; i < 25; ++i) {
-			while(true) {
-				currentFace = (int)(Math.random() * 6);
-				if (currentFace != prevFace && (currentFace != beforePrevFace || currentFace + ((currentFace + 1) % 2) * 2 - 1 == prevFace)) {
-					break;
-				}
-			}
-			int turn = (int)(Math.random() * 3);
-			scramble.append(MOVES[currentFace * 3 + turn].NAME + ' ');
-			beforePrevFace = prevFace;
-			prevFace = currentFace;
-		}
-		return scramble.toString();
-	}
-
 	public static void main(String[] args) throws Exception {
-		//testRandom();
-		testManual();
-	}
-
-	private static void testRandom() {
-		System.out.println("Enter cube state: ");
-		for (int i = 1; i <= 100; ++i) {
-			long startTime = System.nanoTime();
-			String scramble = randomScramble();
-			System.out.println("Scramble " + i + ": " + scramble);
-			List<String> sol = solve(scramble);
-			long endTime = System.nanoTime();
-			System.out.println("Solution: " + Arrays.toString(sol.toArray()));
-			System.out.println("Length: " + (sol.size() - 3));
-			System.out.println("Total time: " + (endTime - startTime) / 1000000 + " ms");
-		}
-
-	}
-
-	private static void testManual() throws Exception {
 		System.out.println("Enter cube state: ");
 		String input = new BufferedReader(new InputStreamReader(System.in)).readLine();
 		long startTime = System.nanoTime();
 		List<String> sol = solve(input);
-		String scramble = randomScramble();
 		long endTime = System.nanoTime();
 		System.out.println("Solution: " + Arrays.toString(sol.toArray()));
 		System.out.println("Length: " + (sol.size() - 3));
