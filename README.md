@@ -17,4 +17,4 @@ R2 B' U2 B D2 R2 D2 L2 B' R2 F D' L2 R2 F' U' L U2 R F' U
 
 This means first turn the right face 180 degrees, then turn the back face 90 degrees counter-clockwise, then turn the top face 180 degrees, etc.
 
-The program uses the Thistlewaite algorithm, which splits the state of the cube into 4 phases.
+The program uses the Thistlewaite algorithm, which splits the state of the cube into 4 phases. Phase 1 orients all of the edges. Phase 2 orients all of the corners and places the UD-slice edges into the UD slice. Phase 3 fixes the parity of the edges and corners, places the corners into their correct tetrads, places the LR-slice edges into the LR slice, and places the BF-slice edges into the BF-slice. Finally, Phase 4 solves the cube.
