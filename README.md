@@ -9,7 +9,7 @@ D- bottom face clockwise 90 degrees
 F- front face clockwise 90 degrees
 B- back face clockwise 90 degrees
 
-if a "'" is in front of the letter, this means to turn the face 90 degrees counter-clockwise instead of clockwise. For example, U' means to turn the top face 90 degrees counter-clockwise. If a "2" is in front of the letter, this means to turn the face 180 degrees. For example, U2 means to turn the top face 180 degrees.
+if a ''' is in front of the letter, this means to turn the face 90 degrees counter-clockwise instead of clockwise. For example, U' means to turn the top face 90 degrees counter-clockwise. If a '2' is in front of the letter, this means to turn the face 180 degrees. For example, U2 means to turn the top face 180 degrees.
 
 Here is an example of an input scramble:
 
